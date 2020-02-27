@@ -146,7 +146,7 @@
         console.log(ashley.energy);
         //This is the way of ES-5
 
-        //************** Type 7 *******************
+        //************** Type 7 ES-6 Way *******************
 
         //so if you come from onether OOP language you can do it as like below
         class AnimalClassAsOtherLanguages {
@@ -179,8 +179,107 @@
         //**************  Getting The Anchestor of an Object  *****************
         console.log(larson instanceof AnimalClassAsOtherLanguages);
 
-        //************** Making Specific Classes for Individual Animals  *********************
-        
+        //******** Making Specific Classes for Individual Animals - Inheritance  ****************
+
+        function AnimalBase (name, energy) {//This is base class constructor
+            this.name = name;
+            this.energy = energy;
+        }
+
+        AnimalBase.prototype.eat = function(amount) {
+            console.log(`${this.name} is eating`);
+            this.energy +=amount;
+        }
+        AnimalBase.prototype.sleep = function(length) {
+            console.log(`${this.name} is sleeping`);
+            this.energy +=length;
+        }
+
+        function Dog (name, energy, breed) {//We somehow want to utilise animal base class whenever creating Dog class
+            AnimalBase.call(this, name, energy);//inside Dog constructor we want to use AnimalBase constructor function so we invoke AnimalBase constructor in the context of Dog constructor. This means we want to call Dog but with the this. keyword Dog. So when the AnimalBase function runs we want this. to reference dog instance not the animal.
+            //.call allows you to invoke the function specifying in what context function will be invoked. After this line runs our this keyword is going to have name and energy property because that is what the AnimalBase constructor did.
+            this.breed = breed; //And then we add breed property to the instance itself as well.
+        }
+        const charlie = new Dog('Charlie', 10, 'Goldendoodle');
+        console.log(charlie);//Dog {name: "Charlie", energy: 10, breed: "Goldendoodle"}
+        //console.log(charlie.sleep(2));//-->it gives error why?
+        //even thoug we added only breed property we can see AnimalBase properties also. But we aim to use, not only properties but methods also. We know all the methods are on the AnimalBase.prototype we provide all instance of Dog will have access the all methods of AnimalBase.prototype 
+        Dog.prototype = Object.create(AnimalBase.prototype);//object.create allows you to create an object whic delegate another object on failed lookups. In this case the object we want to create is Dog.prototype and the object we want to delegate for failed lookups is AnimalBase.prototype.
+        //so when we try again
+        const delta = new Dog('Delta', 9, 'Bulldog');
+        //we also want each instance of Dog able to bark so we add bark function to Dog.prototype object
+        delta.sleep(8);
+        Dog.prototype.bark = function() {
+            console.log('woof woof');
+            this.energy -=.1;
+        }
+        delta.bark();//every dog can now also can bark
+
+        //there is also one other change that we have to do. Just fix one thing that er broke
+        console.log(delta instanceof AnimalBase);//returns true
+        console.log(delta.constructor);//it shuldn't point the AnimalBase constructor it should point the Dog constructor. It poits animal because of this line --> Dog.prototype = Object.create(AnimalBase.prototype);
+        //Instead of Dog.prototype having constructor property, it no longer does becouse it is just an object that delegates to AnimalBase.prototype so to fix it we do
+        Dog.prototype.constructor = Dog;
+        console.log(delta.constructor);//now it returns the Dog constructor
+
+        //So if we want to summirize and create a new subclass of AnimalBase class
+
+        function Cat (name, energy, declawed) {
+            AnimalBase.call(this, name, energy);
+            this.declawed = declawed;
+        }
+        Cat.prototype = Object.create(AnimalBase.prototype);
+        Cat.prototype.constructor = Cat;
+
+        Cat.prototype.meow = function() {
+            console.log('meooovv');
+            Cat.energy -=.1;
+        }
+        const charole = new Cat('Charole', 8, true);
+        console.log(charole);//it returns
+        /*Cat {name: "Charole", energy: 8, declawed: true}
+            name: "Charole"
+            energy: 8
+            declawed: true
+            __proto__: AnimalBase */
+
+        //It is inheritance, a base class with subclasses that delegate to it. It is staple of Object Oriented Programming!!!
+
+        //****************** Now Let Us See The Inheritance with ES-6 Format *****************
+
+        class AnimalClassInheritanceES6 {
+            constructor(name, energy) {
+                this.name = name;
+                this.energy = energy;
+            }
+            eat(amount) {//constructor function's prototype
+                console.log(`${this.name} is eating`)
+                this.energy +=amount;
+            }
+            sleep(length) {
+                console.log(`${this.name} is sleeping`)
+                this.energy +=length;
+            }  
+        }
+
+        class DogES6 extends AnimalClassInheritanceES6{
+            constructor(name, energy, breed) {
+                //instead of -->AnimalBase.call(this, name, energy);
+                //when we extend a base class we need to invoke base class'es constructor function 
+                //here we invoke super() for this aim
+                super(name, energy)//super call the constructor function which we extendinf
+                this.breed = breed;
+            }
+            bark() {
+                console.log('woof woof');
+                this.energy -=.1; 
+            }
+        }
+
+        const avalanche = new Dog('Avalanche', 9, 'Doberman');
+        console.log(avalanche.energy);
+        avalanche.bark();
+
     </script>
 </body>
 </html>
