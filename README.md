@@ -1,0 +1,1 @@
+This is a very useful study over classes, ptototypes and objects with the wonderful teach of Tyler McGinnis.

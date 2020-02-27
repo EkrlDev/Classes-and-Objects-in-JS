@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studies On Classes and Objects</title>
+</head>
+<body>
+    <script>
+        //****Type one ******************
+        //we have to create one by one each animal object when we need them
+        let animal = {};
+        animal.name = 'Leo';
+        animal.energy = 10;
+
+        animal.eat = function(amount) {
+            console.log(`${this.name} is eating`)
+            this.energy +=amount;
+        }
+
+        animal.sleep = function(length) {
+            console.log(`${this.name} is sleeping`)
+            this.energy +=length;
+        }
+        console.log(animal);
+
+        //********Type Two******************
+        //We make a fuction that creates an animal object and we use that when we need a animal object
+        
+        function Animal2 (name, energy) {
+            let animal2 = {};
+            animal2.name = name;
+            animal2.energy = energy;
+
+            animal2.eat = function(amount) {
+            console.log(`${this.name} is eating`)
+            this.energy +=amount;
+            }
+
+            animal2.sleep = function(length) {
+            console.log(`${this.name} is sleeping`)
+            this.energy +=length;
+            }
+            return animal2;
+        }
+        const leo = Animal2('Leon', 7);
+        console.log(leo);
+        //Imagine we have lots of animals in our app we will be created all methods on memory this is not a good way
+
+        //***************  Type 3  *********************
+        //Instead of recreating animal methods we are now referencing them.
+        //But what if we add a new method to the animalMethod object. We want Animal objects to always reference all methods of animalMethods whether they are created initially or afterwards.
+
+        const animalMethods = {
+            eat(amount) {
+            console.log(`${this.name} is eating`)
+            this.energy +=amount;
+            },
+            sleep(length) {
+            console.log(`${this.name} is sleeping`)
+            this.energy +=length;
+            }
+        }
+        function Animal3 (name, energy) {
+            let animal3 = {};
+            animal3.name = name;
+            animal3.energy = energy;
+            animal3.eat = animalMethods.eat;
+            animal3.sleep = animalMethods.sleep;
+
+            return animal3;
+        }
+        const rudolph = Animal3('Rudolph', 11);
+        console.log(rudolph);
+        
+        //*************  Type 4  *********************
+        //Wecan evoke Object.create function and give parameter as parent function. Now animal methods are methods of animalMethods. So if wee add new methods afterwards we can call them also in Animal. 
+
+        function Animal4 (name, energy) {
+            let animal4 = Object.create(animalMethods)//create an empty object and delegate to animalMethods object.
+            animal4.name = name;
+            animal4.energy = energy;
+
+            return animal4;
+        }
+
+        const casey = Animal4('Casey', 5);
+        console.log(casey);//it returns {name: "Casey", energy: 5} methods aren't seen as they are now method of the animalMethods but it can be evoked. So if we add new 
+        casey.eat(8);
+        console.log(casey.energy);//returns Casey is eating -- 13
+
+        //***************  Type 5  **********************
+
+        //In JS there is a way of doing above --> prototyphes!!!
+        //prototyp is a propery of a fuction that points an object that have a constructor property on it. 
+        //Instead of creatin a seperate object for comman methods that we reference, we are putting them prototype of a function that create an object
+
+        function Animal5 (name, energy) {//this is a constructor function
+            let animal5 = Object.create(Animal5.prototype)//we are delegating prototype
+            animal5.name = name;
+            animal5.energy = energy;
+
+            return animal5;//without this line we never get the object that we created
+        }
+
+        Animal5.prototype.eat = function(amount) {//constructor function's prototype
+            console.log(`${this.name} is eating`)
+            this.energy +=amount;
+        }
+        Animal5.prototype.sleep = function(length) {
+            console.log(`${this.name} is sleeping`)
+            this.energy +=length;
+        }
+
+        const loura = Animal5('Loura', 3);
+        console.log(loura);//it returns {name: "Loura", energy: 3} methods aren't seen as they are now method of the prototype but it can be evoked. So if we add new 
+        loura.sleep(5);
+        console.log(loura.energy);//returns Loura is eating -- 8
+
+        //************* Type 6  ****************************
+        //So what is the difference between 
+            //const loura = Animal5('Loura', 3);
+            //and
+            //const loura = new Animal5('Loura', 3);
+
+        // if we use "new" keyword infront of the cunstructor function invokation
+        function AnimalWithNew (name, energy) {
+            //let this = Object.create(AnimalWitNew.prototype)//JS behind the scenes will do this line for us
+            this.name = name;//for any property to add to this object we use "this." keyword
+            this.energy = energy;
+
+            //return this;//and this line for us
+        }
+
+        AnimalWithNew.prototype.eat = function(amount) {//constructor function's prototype
+            console.log(`${this.name} is eating`)
+            this.energy +=amount;
+        }
+        AnimalWithNew.prototype.sleep = function(length) {
+            console.log(`${this.name} is sleeping`)
+            this.energy +=length;
+        }
+        const ashley = new AnimalWithNew('Ashley', 4);
+        console.log(ashley);
+        ashley.sleep(6);
+        console.log(ashley.energy);
+        //This is the way of ES-5
+
+        //************** Type 7 *******************
+
+        //so if you come from onether OOP language you can do it as like below
+        class AnimalClassAsOtherLanguages {
+            constructor(name, energy) {
+                this.name = name;
+                this.energy = energy;
+            }
+            eat(amount) {//constructor function's prototype
+                console.log(`${this.name} is eating`)
+                this.energy +=amount;
+            }
+            sleep(length) {
+                console.log(`${this.name} is sleeping`)
+                this.energy +=length;
+            }  
+        }
+
+        const larson = new AnimalClassAsOtherLanguages('Larson', 9);
+        console.log(larson);
+        larson.sleep(2);
+        console.log(larson.energy);
+         //This is the way of ES-6
+
+        //**************** Getting The Prototype  ***************
+        //For any reason if we need to get the prototype of an object
+        const prototype = Object.getPrototypeOf(ashley);
+        console.log(prototype);
+        //So hasOwnProperty() function only shows the properties of instance not all(not the properties of prototype)
+
+        //**************  Getting The Anchestor of an Object  *****************
+        console.log(larson instanceof AnimalClassAsOtherLanguages);
+
+        //************** Making Specific Classes for Individual Animals  *********************
+        
+    </script>
+</body>
+</html>
