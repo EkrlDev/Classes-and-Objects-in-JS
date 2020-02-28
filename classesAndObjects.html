@@ -274,11 +274,17 @@
                 console.log('woof woof');
                 this.energy -=.1; 
             }
+            sleep(length) {//define a base function method in a child called as polimorfism
+                super.sleep();//we can also call the original method from base function like this
+                console.log(`${this.name} is sleeping but this is polimorfied`)
+                this.energy +=length;
+            }
         }
 
-        const avalanche = new Dog('Avalanche', 9, 'Doberman');
+        const avalanche = new DogES6('Avalanche', 9, 'Doberman');
         console.log(avalanche.energy);
         avalanche.bark();
+        console.log(avalanche.sleep());
         
         //*****************Getters and Setters in ES-6 Way 
         
@@ -314,8 +320,8 @@
         }
         const ocean = new Bird('Ocean', 10, 'Blue');
         ocean.aname = 'ocean2'
-        console.log(ocean.name);
-
+        console.log(ocean.name);//we can access the property now, we shouldn't
+        
     </script>
 </body>
 </html>
