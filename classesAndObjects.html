@@ -267,7 +267,7 @@
                 //instead of -->AnimalBase.call(this, name, energy);
                 //when we extend a base class we need to invoke base class'es constructor function 
                 //here we invoke super() for this aim
-                super(name, energy)//super call the constructor function which we extendinf
+                super(name, energy);//super call the constructor function which we extendinf
                 this.breed = breed;
             }
             bark() {
@@ -279,6 +279,42 @@
         const avalanche = new Dog('Avalanche', 9, 'Doberman');
         console.log(avalanche.energy);
         avalanche.bark();
+        
+        //*****************Getters and Setters in ES-6 Way 
+        
+        class AnimalGetterSetter {
+            constructor(name, energy) {
+                this.name = name;
+                this.energy = energy;
+            }
+            eat(amount) {
+                console.log(`${this.name} is eating`)
+                this.energy +=amount;
+            }
+            sleep(length) {
+                console.log(`${this.name} is sleeping`)
+                this.energy +=length;
+            }
+            get aname(){//if we give the function the same name --> "name" we got error we will look back later. Also we can access properties without getter and setter we should solve this also.
+                return this.name;
+            }
+            set aname(newValue) {
+                this.name = newValue;
+            }
+        }
+        class Bird extends AnimalGetterSetter {
+            constructor(name, energy, color) {
+                super(name, energy);
+                this.color = color;
+            }
+            crow() {
+                console.log('cik cik');
+                this.energy -=0.01;
+            }
+        }
+        const ocean = new Bird('Ocean', 10, 'Blue');
+        ocean.aname = 'ocean2'
+        console.log(ocean.name);
 
     </script>
 </body>
